@@ -37,11 +37,18 @@ class Chatbot:
         print(self.bot.getLogger())
 
     def start(self, bot, update):
+        """
+        The variables bot and update are respectively
+        the bot info and the user info.
+        """
         start_text = "This is the bot!"
         bot.send_message(chat_id=update.message.chat_id, text=start_text)
 
     def run(self):
         self.updater.start_polling()
+
+    def stop(self):
+        self.updater.stop()
 
 if __name__ == '__main__':
     token = retrieve_token()
