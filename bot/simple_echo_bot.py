@@ -1,7 +1,7 @@
 import telegram
 import os
 import sys
-from telegram.ext import Updater, CommandHandler
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from configparser import ConfigParser
 import logging
 
@@ -17,27 +17,27 @@ def retrieve_token():
 
 class Chatbot:
     """
-    The chatbot per se! Yay <3
+    The chatbot per se!
     """
     def __init__(self, token):
-        logging.basicConfig(
-            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-            level=logging.INFO)
         self.bot = telegram.Bot(token)
+
+        # The Updater: Its purpose is to receive the updates
+        # from Telegram and to deliver them to the dispatcher.
         self.updater = Updater(token=token)
+
+        # The dispatcher sends all kinds of updates to its registered handlers.
         self.dispatcher = self.updater.dispatcher
 
         start_handler = CommandHandler('start', self.start)
         self.dispatcher.add_handler(start_handler)
-        info_handler = CommandHandler('info', self.info)
-        self.dispatcher.add_handler(info_handler)
+
+        echo_handler = MessageHandler(Filters.text, self.echo)
+        self.dispatcher.add_handler(echo_handler)
 
     def verify_bot(self):
         # print(self.bot.get_me())
         return(self.bot.get_me().username, self.bot.get_me().id)
-
-    def make_log(self):
-        print(self.bot.getLogger())
 
     def start(self, bot, update):
         """
@@ -48,20 +48,15 @@ class Chatbot:
         start_text = "This is the bot!"
         bot.send_message(chat_id=update.message.chat_id, text=start_text)
 
-    def info(self, bot, update):
-        """
-        Info command to know more about the developers.
-        @bot = information about the bot
-        @update = the user info.
-        """
-        info_text = "This is the info!"
-        bot.send_message(chat_id=update.message.chat_id, text=info_text)
-        print('info sent')
+    def echo(self, bot, update):
+        """Echo the user message."""
+        # print(update)
+        update.message.reply_text(update.message.text)
 
     def run(self):
         # Start the Bot
         self.updater.start_polling()
-        
+
         # Run the bot until you press Ctrl-C or the process receives SIGINT,
         # SIGTERM or SIGABRT. This should be used most of the time, since
         # start_polling() is non-blocking and will stop the bot gracefully.

@@ -1,4 +1,4 @@
-default: test
+default: example
 
 test:
 	green3 . -vvv
@@ -8,3 +8,9 @@ run:
 
 install:
 	pip3 install -r requirements.txt
+
+style:
+	pycodestyle bot/ tests/
+
+example:
+	python3 bot/simple_echo_bot.py
